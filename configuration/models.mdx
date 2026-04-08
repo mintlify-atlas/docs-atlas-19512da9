@@ -1,0 +1,136 @@
+---
+title: Models
+description: Download, manage, and switch between Whisper transcription models in Buzz.
+---
+
+Open model preferences by going to **Preferences → Models** from the menu bar.
+
+## Downloading a model
+
+The models list shows all available model types and sizes. Select a model and click **Download** to fetch it. Buzz stores downloaded models locally so transcription works entirely offline.
+
+<Note>
+You must download at least one model before you can run a transcription. Buzz does not bundle any models with the application.
+</Note>
+
+## Available model types
+
+Buzz supports four local model types and one API-based option. Each offers a different trade-off between speed, accuracy, memory usage, and hardware requirements.
+
+<AccordionGroup>
+  <Accordion title="Whisper">
+    The original OpenAI Whisper implementation. Accurate and well-tested across all supported model sizes. Runs on CPU or GPU. A good general-purpose choice.
+  </Accordion>
+
+  <Accordion title="Whisper.cpp">
+    A C++ port of Whisper optimized for CPU inference. Generally faster than the Python Whisper backend on CPU-only machines. On Apple Silicon Macs, Buzz also downloads CoreML encoder files alongside the model weights, enabling hardware-accelerated inference via Metal.
+
+    Whisper.cpp also supports **custom models** — see the [Custom models](#custom-models-whispercpp) section below.
+  </Accordion>
+
+  <Accordion title="Faster Whisper">
+    A CTranslate2-based reimplementation of Whisper. Typically delivers the best transcription speed on machines with an Nvidia GPU. Also available for CPU inference.
+
+    <Note>
+    Faster Whisper is not available on macOS with an Intel (x86_64) processor due to an upstream compatibility issue.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Hugging Face">
+    Runs any Whisper-compatible model hosted on [Hugging Face](https://huggingface.co). Enter the model repository ID (for example, `openai/whisper-large-v3`) and Buzz will download the necessary files automatically.
+
+    This option gives you access to fine-tuned and community models beyond the standard Whisper sizes.
+  </Accordion>
+</AccordionGroup>
+
+## Model sizes
+
+All local model types (Whisper, Whisper.cpp, Faster Whisper) share the same set of sizes. Larger models are more accurate but require more memory and take longer to run.
+
+| Size | Approximate download size | Notes |
+|---|---|---|
+| Tiny | ~73 MB | Fastest; good for quick tests |
+| Tiny (English only) | ~73 MB | Slightly more accurate for English-only audio |
+| Base | ~139 MB | Good balance on low-resource hardware |
+| Base (English only) | ~139 MB | English-only variant |
+| Small | ~462 MB | Better accuracy, still reasonably fast |
+| Small (English only) | ~462 MB | English-only variant |
+| Medium | ~1.5 GB | High accuracy for most languages |
+| Medium (English only) | ~1.5 GB | English-only variant |
+| Large | ~2.9 GB | Maximum accuracy (Large V1) |
+| Large-V2 | ~2.9 GB | Improved accuracy over Large |
+| Large-V3 | ~2.9 GB | Best overall accuracy |
+| Large-V3 Turbo | ~1.6 GB | Near Large-V3 accuracy at roughly half the size |
+
+<Tip>
+Start with **Whisper.cpp Tiny** for fast results while you explore Buzz. Upgrade to **Faster Whisper Small** or **Whisper.cpp Base** when you want better accuracy without a large download.
+</Tip>
+
+<Note>
+English-only variants (`tiny.en`, `base.en`, `small.en`, `medium.en`) are slightly more accurate for English-only audio. Use the multilingual variants if your audio contains other languages.
+</Note>
+
+### Large model variants
+
+Buzz ships with four "large" variants:
+
+- **Large** — The original Large (V1) model.
+- **Large-V2** — A refined version with improved multilingual accuracy.
+- **Large-V3** — The most accurate Whisper model released by OpenAI to date.
+- **Large-V3 Turbo** — A distilled version of Large-V3. Roughly half the size with comparable accuracy, making it the best default choice when you want top quality without the full Large-V3 footprint. (Faster Whisper only — uses the `mobiuslabsgmbh/faster-whisper-large-v3-turbo` repository.)
+
+### Latvian model (Lumii)
+
+Whisper.cpp includes a special **Lumii** model variant (`lumii`), a Latvian-language optimized model hosted at `RaivisDejus/whisper.cpp-lv` on Hugging Face. Select it from the model size list when transcribing Latvian audio for best results.
+
+## Custom models (Whisper.cpp)
+
+Whisper.cpp supports custom `.bin` model files downloaded directly from Hugging Face.
+
+<Steps>
+  <Step title="Open model preferences">
+    Go to **Preferences → Models** and select **Whisper.cpp** as the model type.
+  </Step>
+  <Step title="Select Custom size">
+    In the model size list, choose **Custom**.
+  </Step>
+  <Step title="Paste the download URL">
+    Paste the direct URL to the `.bin` file. Use the **Download** button link from the Hugging Face file page — not the page URL itself.
+  </Step>
+  <Step title="Download the model">
+    Click **Download**. Buzz saves the file as `ggml-model-whisper-custom.bin` in the model root directory.
+  </Step>
+</Steps>
+
+Whisper.cpp models in various quantizations are available at [ggerganov/whisper.cpp](https://huggingface.co/ggerganov/whisper.cpp/tree/main) on Hugging Face. You can also find community models for additional languages on the [Buzz custom models discussion page](https://github.com/chidiwilliams/buzz/discussions/866).
+
+### Quantized models
+
+Quantized models trade a small amount of accuracy for significantly reduced memory usage and faster inference. For example, `ggml-base-q5_1.bin` is a quantized version of the Base model that runs faster and uses less RAM than the full-precision file.
+
+Look for filenames containing `q4`, `q5`, or `q8` on the Hugging Face repository. The `q5` variants are a practical starting point — they are well-supported and offer a good speed-to-quality ratio.
+
+## Managing downloaded models
+
+### Deleting a model
+
+Select a downloaded model in the list and click **Delete** to remove it from disk. This frees up the disk space used by that model's files.
+
+<Warning>
+Deleting a model is permanent. You will need to download it again before you can use it for transcription.
+</Warning>
+
+### Show file location
+
+Select any downloaded model and click **Show in Finder** (macOS) or **Open file location** (Windows/Linux) to open the folder containing the model files in your system file browser.
+
+By default, Buzz stores models in the platform cache directory. You can change this location with the [`BUZZ_MODEL_ROOT`](/configuration/environment-variables) environment variable.
+
+<CardGroup cols={2}>
+  <Card title="Preferences" icon="sliders" href="/configuration/preferences">
+    Configure export file names, live transcription mode, and the OpenAI API.
+  </Card>
+  <Card title="Environment variables" icon="terminal" href="/configuration/environment-variables">
+    Set the model directory, thread count, and other advanced options.
+  </Card>
+</CardGroup>

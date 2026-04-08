@@ -1,0 +1,66 @@
+---
+title: Translations
+description: Translate transcripts to English using Whisper, or to any language using an OpenAI-compatible AI.
+---
+
+Buzz supports two translation approaches: Whisper's built-in translation task (English output only) and AI translation via any OpenAI-compatible API (any target language).
+
+## Translate to English with Whisper
+
+Select **Translate to English** as the task when importing a file or starting a live recording. Whisper transcribes the audio and outputs English text directly, without a separate translation step.
+
+## AI translation to any language
+
+For translation into languages other than English, configure an OpenAI-compatible AI translation backend.
+
+<Steps>
+  <Step title="Set your API key">
+    Open **Preferences** and enter your OpenAI API key (or the key for your local AI backend).
+  </Step>
+  <Step title="Enable AI translation">
+    - **For file transcriptions:** open the transcription viewer for a completed transcription and click **Translate** in the toolbar.
+    - **For live recordings:** open **Advanced settings** in the live recording dialog and enable AI translation. Enter the model name and translation prompt.
+  </Step>
+  <Step title="Write translation instructions">
+    In the **Instructions for AI** field, describe what you want the model to do. Be explicit about the target language and ask it not to add commentary.
+
+    Example prompt to translate English subtitles to Spanish:
+
+    ```text
+    You are a professional translator, skilled in translating English to Spanish.
+    You will only translate each sentence sent to you into Spanish and not add any
+    notes or comments.
+    ```
+  </Step>
+  <Step title="Run the translation">
+    Buzz sends each segment to the AI API and stores the result alongside the original transcript. Switch to **Translation** view in the viewer to see the output.
+  </Step>
+</Steps>
+
+<Tip>
+  Buzz supports locally running AI backends such as [Ollama](https://ollama.com/blog/openai-compatibility) and [LM Studio](https://lmstudio.ai/) in addition to OpenAI. See the [community discussion](https://github.com/chidiwilliams/buzz/discussions/827) for a list of tested compatible APIs.
+</Tip>
+
+Approximate cost of AI translation for a 1-hour audio file using OpenAI's **gpt-4o** model is around **$0.50**.
+
+## Live transcript export
+
+When you enable **Enable live recording transcription export** in Preferences, Buzz writes live transcripts (and translations) to a text file as they are generated. You can point another application at this file to display captions in real time.
+
+A common use case is feeding live captions into [OBS Studio](https://obsproject.com/) via a text source that reads from the export file.
+
+## Environment variables
+
+You can override the translation API endpoint and key without modifying Preferences by setting environment variables before launching Buzz:
+
+| Variable | Description |
+|---|---|
+| `BUZZ_TRANSLATION_API_BASE_URL` | Base URL of the OpenAI-compatible API to use for translation. |
+| `BUZZ_TRANSLATION_API_KEY` | API key for the translation endpoint. |
+
+Example:
+
+```bash
+export BUZZ_TRANSLATION_API_BASE_URL=http://localhost:11434/v1
+export BUZZ_TRANSLATION_API_KEY=ollama
+```

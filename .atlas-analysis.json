@@ -1,0 +1,87 @@
+{
+  "projectType": "saas",
+  "projectName": "Buzz",
+  "projectDescription": "Buzz is a desktop application that transcribes and translates audio offline on your personal computer, powered by OpenAI's Whisper.",
+  "theme": "almond",
+  "primaryColor": "#6366f1",
+  "lightColor": "#818cf8",
+  "darkColor": "#4f46e5",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "introduction",
+          "installation"
+        ]
+      },
+      {
+        "group": "Using Buzz",
+        "pages": [
+          "usage/file-import",
+          "usage/live-recording",
+          "usage/transcription-viewer",
+          "usage/speaker-identification",
+          "usage/translations",
+          "usage/watch-folder"
+        ]
+      },
+      {
+        "group": "Configuration",
+        "pages": [
+          "configuration/preferences",
+          "configuration/models",
+          "configuration/environment-variables"
+        ]
+      },
+      {
+        "group": "CLI",
+        "pages": [
+          "cli/overview",
+          "cli/commands"
+        ]
+      },
+      {
+        "group": "Help",
+        "pages": [
+          "faq",
+          "troubleshooting"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Offline transcription of audio and video files using OpenAI Whisper",
+    "Live real-time audio transcription from microphone",
+    "Multiple Whisper backends: Whisper, Whisper.cpp, Faster Whisper, HuggingFace",
+    "GPU acceleration support (CUDA for Nvidia, Apple Silicon, Vulkan)",
+    "Export transcripts to TXT, SRT, and VTT formats",
+    "Speaker identification in transcribed media",
+    "Advanced Transcription Viewer with search, playback, and speed controls",
+    "Presentation window for live transcription during events",
+    "Watch folder for automatic transcription of new files",
+    "Command-Line Interface for scripting and automation",
+    "Translation to English using Whisper translation task",
+    "Support for 90+ languages with automatic language detection"
+  ],
+  "publicApiSurface": [
+    "buzz add --task <transcribe|translate> [files...]",
+    "buzz add --model-type <whisper|whispercpp|huggingface|fasterwhisper|openaiapi>",
+    "buzz add --model-size <tiny|base|small|medium|large>",
+    "buzz add --language <code>",
+    "buzz add --srt --vtt --txt",
+    "buzz add --word-timestamps",
+    "buzz add --extract-speech",
+    "buzz add --output-directory <dir>",
+    "buzz add --hide-gui",
+    "BUZZ_WHISPERCPP_N_THREADS environment variable",
+    "BUZZ_TRANSLATION_API_BASE_URL environment variable",
+    "BUZZ_TRANSLATION_API_KEY environment variable",
+    "BUZZ_MODEL_ROOT environment variable",
+    "BUZZ_FAVORITE_LANGUAGES environment variable",
+    "BUZZ_UPLOAD_URL environment variable",
+    "BUZZ_FORCE_CPU environment variable",
+    "BUZZ_REDUCE_GPU_MEMORY environment variable",
+    "BUZZ_DISABLE_TELEMETRY environment variable"
+  ]
+}

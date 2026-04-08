@@ -1,0 +1,80 @@
+---
+title: Preferences
+description: Configure Buzz behavior including the OpenAI API, export file names, and live transcription settings.
+---
+
+Open the Preferences window from the menu bar, or press `Ctrl+,` on Windows and Linux, or `Cmd+,` on macOS.
+
+## General preferences
+
+### UI language
+
+Choose the interface language for Buzz. Available languages include English, Catalan, Danish, Dutch, German, Spanish, Italian, Japanese, Latvian, Polish, Portuguese (Brazil), Ukrainian, Chinese (Simplified), and Chinese (Traditional).
+
+<Note>
+A restart is required after changing the UI language.
+</Note>
+
+### Font size
+
+Adjust the application font size (range: 8–32 pt). Changes take effect immediately.
+
+### OpenAI API
+
+Use the **API Key**, **Base URL**, and **API Model** fields to connect Buzz to the OpenAI API or any compatible alternative.
+
+**API Key** — Your key to authenticate requests to the OpenAI API. Required when using the **OpenAI Whisper API** model type. To obtain a key, see [Where do I find my OpenAI API key?](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key). Click **Test** to verify your key is valid.
+
+**Base URL** — The API endpoint Buzz sends requests to. Defaults to `https://api.openai.com/v1`. You can point this to any OpenAI-compatible API — for example, a local server or a third-party provider. A community-maintained list of compatible services is available on the [Buzz discussion page](https://github.com/chidiwilliams/buzz/discussions/827).
+
+**API Model** — The model name sent to the API. Defaults to `whisper-1`. Change this if your compatible API uses a different model name.
+
+### GPU settings
+
+**Reduce GPU RAM** — Enables 8-bit quantization for Hugging Face and Faster Whisper models to reduce GPU memory usage. This may slightly decrease transcription quality. Equivalent to setting the `BUZZ_REDUCE_GPU_MEMORY` environment variable.
+
+**Disable GPU** — Forces Buzz to use only the CPU, disabling GPU acceleration entirely. Useful if your GPU is slower than CPU for this workload, or if GPU drivers cause crashes. Equivalent to setting `BUZZ_FORCE_CPU=true`.
+
+### Default export file name
+
+Sets the default file name for transcription exports. You can use template variables wrapped in `{{ }}` to make the name dynamic.
+
+**Default value:** `{{ input_file_name }} ({{ task }}d on {{ date_time }})`
+
+**Example output:** `Interview (transcribed on 19-Sep-2023 20-39-25).txt`
+
+| Variable | Description | Example value |
+|---|---|---|
+| `input_file_name` | File name of the imported file, without extension | `audio` (for `/path/to/audio.wav`) |
+| `task` | Transcription task | `transcribe`, `translate` |
+| `language` | Detected or selected language code | `en`, `fr`, `yo` |
+| `model_type` | Model backend used | `Whisper`, `Whisper.cpp`, `Faster Whisper` |
+| `model_size` | Model size used | `tiny`, `base`, `small`, `medium`, `large` |
+| `date_time` | Export timestamp in `%d-%b-%Y %H-%M-%S` format | `19-Sep-2023 20-39-25` |
+
+### Live transcript exports
+
+When **Enable live recording transcription export** is checked, Buzz writes live transcription output to a text file as each segment is generated. Use **Export folder** to set the destination directory (defaults to your Documents folder).
+
+If AI translation is enabled for a live recording, the translated text is also written to a separate file. The translated file uses the same name with a `.translated.txt` suffix.
+
+This lets you integrate Buzz with other applications such as OBS Studio by pointing a text source at the exported file.
+
+### Live transcription mode
+
+Controls how new transcription segments are added to the live transcript. Three modes are available:
+
+**Append below** — Each new sentence is added below the previous one, separated by a blank line. The most recent sentence appears at the bottom.
+
+**Append above** — Each new sentence is added above the previous one, separated by a blank line. The most recent sentence appears at the top.
+
+**Append and correct** — New sentences are appended directly to the existing transcript without extra spacing. This mode also attempts to correct errors at the end of previously transcribed sentences as new audio is processed. It requires more processing power than the other two modes.
+
+<CardGroup cols={2}>
+  <Card title="Model preferences" icon="microchip" href="/configuration/models">
+    Download, manage, and delete transcription models.
+  </Card>
+  <Card title="Environment variables" icon="terminal" href="/configuration/environment-variables">
+    Advanced configuration via environment variables.
+  </Card>
+</CardGroup>

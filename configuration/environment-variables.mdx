@@ -1,0 +1,245 @@
+---
+title: Environment variables
+description: Advanced configuration options for Buzz set via operating system environment variables.
+---
+
+Some Buzz settings are not exposed in the Preferences window. You can configure them by setting environment variables before launching Buzz.
+
+## How to set environment variables
+
+<Tabs>
+  <Tab title="macOS / Linux">
+    Create a shell script called `run_buzz.sh` and run it instead of launching Buzz directly:
+
+    ```bash
+    #!/bin/bash
+    export BUZZ_WHISPERCPP_N_THREADS=8
+    export BUZZ_MODEL_ROOT=/path/to/models
+    buzz
+    ```
+
+    Make it executable and run it:
+
+    ```bash
+    chmod +x run_buzz.sh
+    ./run_buzz.sh
+    ```
+
+    Alternatively, set variables in your shell profile (`~/.zshrc`, `~/.bashrc`, etc.) so they apply to every session.
+  </Tab>
+  <Tab title="Windows">
+    Create a batch file called `run_buzz.bat` and run it instead of the application shortcut:
+
+    ```bat
+    @echo off
+    set BUZZ_WHISPERCPP_N_THREADS=8
+    set BUZZ_MODEL_ROOT=C:\path\to\models
+    "C:\Program Files (x86)\Buzz\Buzz.exe"
+    ```
+
+    You can also set persistent environment variables through **System Properties → Advanced → Environment Variables** in Windows settings.
+  </Tab>
+</Tabs>
+
+## Reference
+
+### Transcription
+
+<AccordionGroup>
+  <Accordion title="BUZZ_WHISPERCPP_N_THREADS">
+    **Type:** integer
+
+    Sets the number of CPU threads used by the Whisper.cpp backend. Defaults to half the number of available logical CPU cores.
+
+    Increasing threads up to the number of physical cores generally improves transcription speed. Going beyond the physical core count tends to slow things down because the overhead of combining results from parallel threads outweighs the benefit.
+
+    **Example:** On a laptop with 16 logical threads, setting this to `8` typically yields around 15% faster transcription.
+
+    ```bash
+    export BUZZ_WHISPERCPP_N_THREADS=8
+    ```
+  </Accordion>
+
+  <Accordion title="BUZZ_MERGE_REGROUP_RULE">
+    **Type:** string | Available since: 1.3.0
+
+    A custom regroup/merge rule used when combining transcription segments that have word-level timings enabled. Controls how Buzz splits and joins segments during post-processing.
+
+    See the [stable-ts documentation](https://github.com/jianfch/stable-ts?tab=readme-ov-file#regrouping-methods) for supported rule syntax.
+
+    ```bash
+    export BUZZ_MERGE_REGROUP_RULE="merge_all_then_split_by_gap=1.0"
+    ```
+  </Accordion>
+
+  <Accordion title="BUZZ_PARAGRAPH_SPLIT_TIME">
+    **Type:** integer (milliseconds) | Default: `2000` | Available since: 1.3.0
+
+    The minimum silence gap (in milliseconds) between segments that triggers a paragraph break when exporting transcripts as plain text. Segments separated by at least this duration are split with two newlines rather than one.
+
+    ```bash
+    export BUZZ_PARAGRAPH_SPLIT_TIME=3000
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Translation
+
+<AccordionGroup>
+  <Accordion title="BUZZ_TRANSLATION_API_BASE_URL">
+    **Type:** string (URL)
+
+    Base URL of an OpenAI-compatible API used specifically for translation tasks. This is separate from the **Base URL** set in **Preferences → General** and only applies to AI translation requests.
+
+    ```bash
+    export BUZZ_TRANSLATION_API_BASE_URL=http://localhost:11434/v1
+    ```
+  </Accordion>
+
+  <Accordion title="BUZZ_TRANSLATION_API_KEY">
+    **Type:** string
+
+    API key for the translation API set in `BUZZ_TRANSLATION_API_BASE_URL`. Leave unset if the API does not require authentication.
+
+    ```bash
+    export BUZZ_TRANSLATION_API_KEY=sk-your-api-key
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Models and storage
+
+<AccordionGroup>
+  <Accordion title="BUZZ_MODEL_ROOT">
+    **Type:** string (directory path)
+
+    Directory where Buzz stores downloaded model files. Defaults to the platform-specific user cache directory (see [platformdirs](https://pypi.org/project/platformdirs/)).
+
+    <Note>
+    Some libraries used internally by Buzz download their own model files independently using the `HF_HOME` environment variable. If you want all models in one place, set both `BUZZ_MODEL_ROOT` and `HF_HOME` to the same directory.
+    </Note>
+
+    ```bash
+    export BUZZ_MODEL_ROOT=/mnt/storage/buzz-models
+    export HF_HOME=/mnt/storage/buzz-models
+    ```
+  </Accordion>
+
+  <Accordion title="BUZZ_FAVORITE_LANGUAGES">
+    **Type:** comma-separated string
+
+    A comma-separated list of [ISO 639-1 language codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) to pin at the top of the language selection list. Useful if you frequently transcribe audio in a specific set of languages.
+
+    ```bash
+    export BUZZ_FAVORITE_LANGUAGES=en,lv,de
+    ```
+  </Accordion>
+
+  <Accordion title="BUZZ_DOWNLOAD_COOKIEFILE">
+    **Type:** string (file path)
+
+    Path to a [Netscape-format cookie file](https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp) passed to yt-dlp when downloading media from URLs. Use this to access private videos or to work around bot-protection restrictions.
+
+    ```bash
+    export BUZZ_DOWNLOAD_COOKIEFILE=/home/user/.config/buzz/cookies.txt
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### GPU and hardware
+
+<AccordionGroup>
+  <Accordion title="BUZZ_FORCE_CPU">
+    **Type:** boolean (`true` / `false`) | Available since: 1.2.1
+
+    Forces Buzz to use the CPU for all transcription, ignoring any available GPU. Useful when your GPU is older and slower than the CPU for this workload, or when GPU drivers cause issues.
+
+    ```bash
+    export BUZZ_FORCE_CPU=true
+    ```
+  </Accordion>
+
+  <Accordion title="BUZZ_REDUCE_GPU_MEMORY">
+    **Type:** boolean (`true` / `false`) | Available since: 1.4.0
+
+    Enables 8-bit quantization for the Hugging Face and Faster Whisper backends. This reduces the GPU memory required to load and run models, at a small cost to accuracy.
+
+    ```bash
+    export BUZZ_REDUCE_GPU_MEMORY=true
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Integrations
+
+<AccordionGroup>
+  <Accordion title="BUZZ_UPLOAD_URL">
+    **Type:** string (URL) | Available since: 1.3.0
+
+    A URL that Buzz POSTs live transcription and translation results to as JSON. Useful for displaying live captions on a web page or integrating with a custom server.
+
+    Buzz sends `POST` requests with the following JSON body:
+
+    ```json
+    {"kind": "transcript", "text": "Sample transcript"}
+    ```
+
+    or, when AI translation is enabled:
+
+    ```json
+    {"kind": "translation", "text": "Sample translation"}
+    ```
+
+    You can self-host [buzz-transcription-server](https://github.com/raivisdejus/buzz-transcription-server) as a compatible receiver.
+
+    ```bash
+    export BUZZ_UPLOAD_URL=http://localhost:5000/upload
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Privacy and telemetry
+
+<AccordionGroup>
+  <Accordion title="BUZZ_DISABLE_TELEMETRY">
+    **Type:** boolean (`true` / `false`) | Available since: 1.3.0
+
+    Buzz collects basic anonymous usage statistics — OS name and architecture — to help prioritize development. Set this variable to `true` to opt out.
+
+    Example of what is collected:
+
+    ```text
+    Buzz: 1.3.0, locale: ('lv_LV', 'UTF-8'), system: Linux, release: 6.14.0-27-generic, machine: x86_64
+    ```
+
+    ```bash
+    export BUZZ_DISABLE_TELEMETRY=true
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## All variables at a glance
+
+| Variable | Type | Default | Since |
+|---|---|---|---|
+| `BUZZ_WHISPERCPP_N_THREADS` | integer | Half of CPU threads | — |
+| `BUZZ_MERGE_REGROUP_RULE` | string | — | 1.3.0 |
+| `BUZZ_PARAGRAPH_SPLIT_TIME` | integer (ms) | `2000` | 1.3.0 |
+| `BUZZ_TRANSLATION_API_BASE_URL` | string (URL) | — | — |
+| `BUZZ_TRANSLATION_API_KEY` | string | — | — |
+| `BUZZ_MODEL_ROOT` | string (path) | Platform cache dir | — |
+| `BUZZ_FAVORITE_LANGUAGES` | comma-separated codes | — | — |
+| `BUZZ_DOWNLOAD_COOKIEFILE` | string (path) | — | — |
+| `BUZZ_FORCE_CPU` | boolean | `false` | 1.2.1 |
+| `BUZZ_REDUCE_GPU_MEMORY` | boolean | `false` | 1.4.0 |
+| `BUZZ_UPLOAD_URL` | string (URL) | — | 1.3.0 |
+| `BUZZ_DISABLE_TELEMETRY` | boolean | `false` | 1.3.0 |
+
+<CardGroup cols={2}>
+  <Card title="Preferences" icon="sliders" href="/configuration/preferences">
+    Configure the OpenAI API, export file names, and live transcription mode.
+  </Card>
+  <Card title="Models" icon="microchip" href="/configuration/models">
+    Download and manage transcription models.
+  </Card>
+</CardGroup>

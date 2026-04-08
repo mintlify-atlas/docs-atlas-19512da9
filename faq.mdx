@@ -1,0 +1,256 @@
+---
+title: "FAQ"
+description: "Answers to common questions about Buzz — model storage, transcription speed, GPU support, system audio, and more."
+---
+
+<AccordionGroup>
+  <Accordion title="Where are the models stored?">
+    Buzz stores downloaded models in a platform-specific cache directory:
+
+    <Tabs>
+      <Tab title="Linux">
+        ```bash
+        ~/.cache/Buzz/models
+        ```
+      </Tab>
+      <Tab title="macOS">
+        ```bash
+        ~/Library/Caches/Buzz
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```bash
+        %USERPROFILE%\AppData\Local\Buzz\Buzz\Cache
+        ```
+      </Tab>
+    </Tabs>
+
+    To open the folder directly, go to **Help → Preferences → Models**, download a model, and click **Show file location**.
+  </Accordion>
+
+  <Accordion title="What can I try if transcription is too slow?">
+    Speech recognition is computationally intensive. Try these options in order:
+
+    1. **Use a smaller model** — Tiny and Base models are significantly faster than Large models, with a trade-off in accuracy.
+    2. **Switch to Whisper.cpp** — This C++ backend is efficient and runs on any GPU brand, including integrated graphics. It supports real-time transcription on modern laptops.
+    3. **Use Faster Whisper with an Nvidia GPU** — If you have an Nvidia GPU with at least 6 GB of VRAM, Faster Whisper is orders of magnitude faster than the standard Whisper backend.
+    4. **Use the OpenAI API** — Buzz can send audio to OpenAI's servers for transcription. This requires an API key set in **Preferences** and an internet connection, but offloads all computation.
+
+    <Tip>
+      Whisper.cpp is the best choice if you don't have an Nvidia GPU. It uses Vulkan acceleration and works well on Apple Silicon, AMD, and Intel integrated graphics.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="How do I record system audio?">
+    To transcribe audio playing on your computer (not from a microphone), you need a virtual audio device that captures system output and makes it available as an input source in Buzz.
+
+    <Tabs>
+      <Tab title="macOS">
+        Install [BlackHole](https://github.com/ExistentialAudio/BlackHole), a free virtual audio driver. Once installed, route your application's audio output through BlackHole, then select it as the input source in Buzz.
+      </Tab>
+      <Tab title="Windows">
+        Install [VB-CABLE](https://vb-audio.com/Cable/), a free virtual audio cable. Set VB-CABLE Input as your system playback device, then select VB-CABLE Output as the source in Buzz.
+      </Tab>
+      <Tab title="Linux">
+        Use PulseAudio to create a loopback device. See the [Ubuntu guide for recording system sound](https://wiki.ubuntu.com/record_system_sound) for step-by-step instructions. Then select the monitor source in Buzz.
+      </Tab>
+    </Tabs>
+
+    See the [Live Recording](/usage/live-recording) guide for more detail on selecting audio sources in Buzz.
+  </Accordion>
+
+  <Accordion title="What model should I use?">
+    The right model depends on your hardware and how much accuracy you need.
+
+    **Model size**
+
+    | Size | Speed | Accuracy | VRAM required |
+    |---|---|---|---|
+    | Tiny / Base | Fastest | Lower | < 1 GB |
+    | Small / Medium | Moderate | Good | 2–5 GB |
+    | Large variants | Slowest | Best | 6+ GB |
+
+    Start with a smaller model and only move up if accuracy is insufficient.
+
+    **Choosing among Large models**
+
+    - **Large** — The original large model. Stable and reliable.
+    - **Large-V2** — Improved accuracy over Large. Widely considered the most robust and stable option for many languages.
+    - **Large-V3** — Best accuracy in many cases, but can occasionally hallucinate words that were not in the audio. Use with caution on noisy or ambiguous input.
+    - **Turbo** — A good balance between speed and accuracy. Recommended if Large-V3 produces hallucinations.
+
+    **Choosing a backend**
+
+    - **Whisper** — The original OpenAI implementation. Accurate but slow and memory-hungry. Good baseline reference.
+    - **Faster Whisper** — Optimized for speed. Requires an Nvidia GPU with at least 6 GB of VRAM for best results.
+    - **Whisper.cpp** — Fast, efficient C++ implementation. Works on any GPU (Nvidia, AMD, Apple Silicon, integrated) via Vulkan. Best general-purpose choice if you don't have an Nvidia GPU.
+    - **HuggingFace** — Supports a wide range of custom and fine-tuned models, including Meta's [MMS models](https://ai.meta.com/blog/multilingual-model-speech-recognition/) (1000+ languages) and PEFT-adjusted Whisper models.
+
+    <Tip>
+      The only reliable way to find the best model for your language is to test several options on a representative sample of your audio.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="How do I get GPU acceleration for faster transcription?">
+    <Tabs>
+      <Tab title="Linux">
+        GPU acceleration for Nvidia GPUs is enabled automatically. If you encounter issues, install the required CUDA libraries:
+
+        - [CUDA 12](https://developer.nvidia.com/cuda-downloads)
+        - [cuBLAS](https://developer.nvidia.com/cublas)
+        - [cuDNN](https://developer.nvidia.com/cudnn)
+      </Tab>
+      <Tab title="Windows">
+        CUDA support is included in the Buzz installer. CUDA 12 or later is required — systems with older CUDA versions will fall back to CPU automatically.
+
+        See the [CUDA GPU support note](https://github.com/chidiwilliams/buzz/blob/main/CONTRIBUTING.md#gpu-support) for additional details.
+      </Tab>
+      <Tab title="macOS">
+        Apple Silicon Macs use Metal acceleration automatically — no configuration required. Intel Macs run on CPU only.
+      </Tab>
+    </Tabs>
+
+    <Note>
+      Whisper.cpp also supports Vulkan acceleration, which works on most GPU brands including AMD and Intel integrated graphics on all platforms.
+    </Note>
+  </Accordion>
+
+  <Accordion title="How do I fix `Unanticipated host error [PaErrorCode -9999]`?">
+    This error means Buzz cannot access your microphone, usually because a system permission is blocking it.
+
+    <Tabs>
+      <Tab title="Windows">
+        <Steps>
+          <Step title="Open microphone privacy settings">
+            Go to **Settings → Privacy → Microphone**.
+          </Step>
+          <Step title="Allow app access">
+            Make sure **Allow apps to access your microphone** is turned on, and that Buzz specifically is allowed.
+          </Step>
+          <Step title="Check antivirus software">
+            Some antivirus programs block microphone access. Check your antivirus settings or temporarily disable it to confirm whether it is the cause.
+          </Step>
+        </Steps>
+      </Tab>
+      <Tab title="macOS">
+        Go to **System Settings → Privacy & Security → Microphone** and ensure Buzz has permission.
+      </Tab>
+      <Tab title="Linux">
+        Check that your user is in the `audio` group and that PulseAudio or PipeWire is running correctly.
+      </Tab>
+    </Tabs>
+  </Accordion>
+
+  <Accordion title="Can I use Buzz without internet?">
+    Yes. Once models are downloaded, Buzz runs entirely offline. No data leaves your computer.
+
+    To use Buzz on a machine without internet access:
+
+    <Steps>
+      <Step title="Download models on a connected machine">
+        On a computer with internet, open **Help → Preferences → Models**, download the models you need, and click **Show file location** to find the cache directory.
+      </Step>
+      <Step title="Copy the models folder">
+        Copy the models folder to the same location on the offline computer. For example, on Linux this is `~/.cache/Buzz/models`.
+      </Step>
+      <Step title="Run Buzz offline">
+        Open Buzz on the offline machine. It will detect the models automatically.
+      </Step>
+    </Steps>
+
+    <Note>
+      The OpenAI API backend requires an internet connection. All other backends (Whisper, Whisper.cpp, Faster Whisper, HuggingFace) work offline once models are downloaded.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Buzz crashes — what should I do?">
+    The most common cause of crashes is a corrupted or incomplete model download.
+
+    <Steps>
+      <Step title="Delete and re-download the model">
+        Go to **Help → Preferences → Models**, delete any models that were recently downloaded, and download them again.
+      </Step>
+      <Step title="Check the log file">
+        Since version 1.3.4, you can access logs by going to **Help → About Buzz** and clicking **Show logs**. Look for error messages near the time of the crash.
+      </Step>
+      <Step title="Report the issue">
+        If the crash persists, [open an issue on GitHub](https://github.com/chidiwilliams/buzz/issues). Attach the log file to help the maintainers diagnose the problem.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Where can I get the latest development version?">
+    Development builds include the latest bug fixes and features before they are officially released.
+
+    <Warning>
+      Development builds are less tested than releases and may contain bugs. Use them if you want to try new features or verify a fix for an issue you reported.
+    </Warning>
+
+    <Tabs>
+      <Tab title="Linux (snap)">
+        Install the edge channel directly:
+
+        ```bash
+        sudo snap install buzz --edge
+        ```
+      </Tab>
+      <Tab title="macOS / Windows">
+        <Steps>
+          <Step title="Open the CI build list">
+            Go to the [Buzz CI workflow](https://github.com/chidiwilliams/buzz/actions/workflows/ci.yml?query=branch%3Amain) on GitHub.
+          </Step>
+          <Step title="Select the latest successful build">
+            Click the most recent successful build entry in the list.
+          </Step>
+          <Step title="Download the artifact">
+            Scroll to the **Artifacts** section and download the installer for your platform. You must be logged in to GitHub to see the download links.
+          </Step>
+        </Steps>
+      </Tab>
+    </Tabs>
+  </Accordion>
+
+  <Accordion title="Why is my system theme not applied to Buzz installed from Flatpak?">
+    Flatpak sandboxing can prevent Buzz from reading system themes. Follow these steps to apply your theme.
+
+    **For dark mode on GNOME:**
+
+    ```bash
+    gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+    gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+    ```
+
+    You may also need to install the `gnome-themes-extra` package. On Fedora:
+
+    ```bash
+    sudo dnf install gnome-themes-extra qadwaitadecorations-qt5 qadwaitadecorations-qt6 qt5-qtwayland qt6-qtwayland
+    ```
+
+    **For custom themes:**
+
+    <Steps>
+      <Step title="Copy themes to your home directory">
+        ```bash
+        cp -r /usr/share/themes/ ~/.themes/
+        ```
+      </Step>
+      <Step title="Grant Flatpak access to the themes folder">
+        ```bash
+        flatpak override --user --filesystem=~/.themes
+        ```
+      </Step>
+      <Step title="Restart Buzz">
+        Close and reopen Buzz for the theme to take effect.
+      </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="Troubleshooting" icon="wrench" href="/troubleshooting">
+    Step-by-step fixes for common problems with transcription, audio, models, and GPU
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/configuration/preferences">
+    Set up preferences, models, and environment variables
+  </Card>
+</CardGroup>

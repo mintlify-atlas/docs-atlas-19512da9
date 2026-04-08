@@ -1,0 +1,60 @@
+---
+title: Watch folder
+description: Automatically transcribe new audio and video files as they appear in a folder.
+---
+
+The watch folder feature monitors a directory on your filesystem and starts a transcription job for every new media file that appears there. This lets you drop files into a folder and get transcripts without opening Buzz manually each time.
+
+## Use cases
+
+- Batch-transcribing recordings exported from a digital recorder or DAW
+- Automatically captioning video files rendered by a video editor
+- Processing uploaded files in an automated pipeline
+
+## Configure the watch folder
+
+<Steps>
+  <Step title="Open Preferences">
+    Go to **Buzz → Preferences** (macOS) or **Edit → Preferences** (Windows/Linux).
+  </Step>
+  <Step title="Go to the Folder Watch tab">
+    Select the **Folder Watch** section in the Preferences dialog.
+  </Step>
+  <Step title="Enable folder watch">
+    Check **Enable folder watch**.
+  </Step>
+  <Step title="Set the input folder">
+    Click **Browse** next to **Input folder** and choose the directory Buzz should monitor. Buzz watches this folder and all of its subdirectories, preserving the subfolder structure in the output.
+  </Step>
+  <Step title="Set the output folder">
+    Click **Browse** next to **Output folder** and choose where Buzz should write the transcript files.
+  </Step>
+  <Step title="Configure transcription settings">
+    Choose your preferred task, language, model, and export format. These settings apply to every file processed by the watch folder.
+  </Step>
+  <Step title="Optionally delete processed files">
+    Check **Delete processed files** if you want Buzz to remove the source media file after transcription completes.
+  </Step>
+</Steps>
+
+## How it works
+
+Once enabled, Buzz uses a filesystem watcher to detect changes in the input folder. When a new media file appears, Buzz:
+
+1. Checks that the file has a supported extension (`.mp3`, `.wav`, `.m4a`, `.ogg`, `.opus`, `.flac`, `.mp4`, `.webm`, `.ogm`, `.mov`, `.mkv`, `.avi`, `.wmv`).
+2. Skips hidden files, temporary conversion files, and files already queued or transcribed.
+3. Downloads the model if it is not already cached locally.
+4. Creates a transcription task and adds it to the main queue.
+5. Writes the output to the configured output folder, mirroring any subdirectory structure from the input folder.
+
+<Note>
+  Buzz only processes files that appear **after** the watch folder is enabled. Files already present in the folder when you enable the feature are not automatically queued.
+</Note>
+
+## Supported file formats
+
+The watch folder accepts the same formats as file import:
+
+**Audio:** `.mp3`, `.wav`, `.m4a`, `.ogg`, `.opus`, `.flac`
+
+**Video:** `.mp4`, `.webm`, `.ogm`, `.mov`, `.mkv`, `.avi`, `.wmv`

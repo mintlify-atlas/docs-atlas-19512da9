@@ -1,0 +1,244 @@
+---
+title: "CLI commands"
+description: "Complete reference for every flag and argument accepted by the Buzz CLI add command."
+---
+
+## `add`
+
+Start one or more transcription or translation tasks from the command line.
+
+```bash
+buzz add [options] [file|url ...]
+```
+
+At least one input file path or URL is required. Multiple inputs are processed sequentially. URL support is available since version 1.2.0.
+
+---
+
+## Flags
+
+<AccordionGroup>
+
+  <Accordion title="Task and model" defaultOpen={true}>
+
+    <ParamField query="-t, --task" type="string" default="transcribe">
+      The operation to perform on each input file.
+
+      | Value | Description |
+      |---|---|
+      | `transcribe` | Produce a transcript in the source language |
+      | `translate` | Translate the audio to English |
+    </ParamField>
+
+    <ParamField query="-m, --model-type" type="string" default="whisper">
+      The transcription backend to use.
+
+      | Value | Description |
+      |---|---|
+      | `whisper` | OpenAI Whisper (Python) |
+      | `whispercpp` | Whisper.cpp — faster, lower memory usage |
+      | `fasterwhisper` | Faster Whisper — optimised CTranslate2 backend |
+      | `huggingface` | Any model hosted on Hugging Face Hub |
+      | `openaiapi` | OpenAI Whisper API — requires an API token |
+    </ParamField>
+
+    <ParamField query="-s, --model-size" type="string" default="tiny">
+      The size variant of the Whisper model to use. Only applies when `--model-type` is `whisper`, `whispercpp`, or `fasterwhisper`.
+
+      | Value | Approximate size | Notes |
+      |---|---|---|
+      | `tiny` | ~73 MB | Fastest; lower accuracy |
+      | `tiny.en` | ~73 MB | English-only; slightly more accurate for English |
+      | `base` | ~139 MB | |
+      | `base.en` | ~139 MB | English-only variant |
+      | `small` | ~462 MB | Good balance of speed and accuracy |
+      | `small.en` | ~462 MB | English-only variant |
+      | `medium` | ~1.5 GB | |
+      | `medium.en` | ~1.5 GB | English-only variant |
+      | `large` | ~2.9 GB | Large V1 |
+      | `large-v2` | ~2.9 GB | Improved multilingual accuracy |
+      | `large-v3` | ~2.9 GB | Best accuracy; may hallucinate on noisy audio |
+      | `large-v3-turbo` | ~1.6 GB | Faster Whisper only; near Large-V3 quality |
+
+      <Warning>
+        This flag is ignored when `--model-type` is `huggingface` or `openaiapi`.
+      </Warning>
+    </ParamField>
+
+    <ParamField query="--hfid" type="string">
+      The Hugging Face model ID to use. Required when `--model-type` is `huggingface`.
+
+      ```bash
+      buzz add --model-type huggingface --hfid openai/whisper-tiny recording.mp3
+      ```
+    </ParamField>
+
+  </Accordion>
+
+  <Accordion title="Language and prompt">
+
+    <ParamField query="-l, --language" type="string" default="">
+      A BCP-47 language code for the audio source language. Leave this flag unset (or pass an empty string) to let Buzz detect the language automatically.
+
+      Supported language codes include `af`, `am`, `ar`, `as`, `az`, `ba`, `be`, `bg`, `bn`, `bo`, `br`, `bs`, `ca`, `cs`, `cy`, `da`, `de`, `el`, `en`, `es`, `et`, `eu`, `fa`, `fi`, `fo`, `fr`, `gl`, `gu`, `ha`, `haw`, `he`, `hi`, `hr`, `ht`, `hu`, `hy`, `id`, `is`, `it`, `ja`, `jw`, `ka`, `kk`, `km`, `kn`, `ko`, `la`, `lb`, `ln`, `lo`, `lt`, `lv`, `mg`, `mi`, `mk`, `ml`, `mn`, `mr`, `ms`, `mt`, `my`, `ne`, `nl`, `nn`, `no`, `oc`, `pa`, `pl`, `ps`, `pt`, `ro`, `ru`, `sa`, `sd`, `si`, `sk`, `sl`, `sn`, `so`, `sq`, `sr`, `su`, `sv`, `sw`, `ta`, `te`, `tg`, `th`, `tk`, `tl`, `tr`, `tt`, `uk`, `ur`, `uz`, `vi`, `yi`, `yo`, `yue`, `zh`.
+
+      <Tip>
+        Specifying the language explicitly improves accuracy and reduces processing time, because Whisper skips the language-detection step.
+      </Tip>
+    </ParamField>
+
+    <ParamField query="-p, --prompt" type="string" default="">
+      An initial prompt to condition the model. Use this to provide context, correct spelling of proper nouns, or guide the output style.
+
+      ```bash
+      buzz add --prompt "Meeting between Alice and Bob. Technical discussion about Kubernetes." meeting.mp4
+      ```
+    </ParamField>
+
+  </Accordion>
+
+  <Accordion title="Transcript options">
+
+    <ParamField query="-w, --word-timestamps" type="boolean">
+      Generate word-level timestamps in the output. When set, each word in the transcript carries its own start and end time.
+
+      Available since version 1.2.0.
+    </ParamField>
+
+    <ParamField query="-e, --extract-speech" type="boolean">
+      Run a speech-extraction pass on the audio before transcribing. This removes background noise, music, and non-speech sounds, which can improve accuracy in noisy recordings.
+
+      Available since version 1.3.0.
+    </ParamField>
+
+  </Accordion>
+
+  <Accordion title="Output">
+
+    <ParamField query="-d, --output-directory" type="string">
+      Directory where output files are written. Defaults to the same directory as each input file when not set.
+
+      ```bash
+      buzz add --txt --output-directory /tmp/transcripts lecture.mp3
+      ```
+    </ParamField>
+
+    <ParamField query="--srt" type="boolean">
+      Write the transcript to a SubRip (`.srt`) subtitle file alongside the input.
+    </ParamField>
+
+    <ParamField query="--vtt" type="boolean">
+      Write the transcript to a WebVTT (`.vtt`) subtitle file alongside the input.
+    </ParamField>
+
+    <ParamField query="--txt" type="boolean">
+      Write the transcript to a plain-text (`.txt`) file alongside the input.
+    </ParamField>
+
+    <Note>
+      You can combine `--srt`, `--vtt`, and `--txt` to generate all three formats in a single run. If none of the output format flags are set, the transcript is added to the Buzz task list in the GUI but no file is written.
+    </Note>
+
+  </Accordion>
+
+  <Accordion title="OpenAI API">
+
+    <ParamField query="--openai-token" type="string">
+      Your OpenAI API access token. Required when `--model-type` is `openaiapi` and no token has been saved in Buzz previously.
+
+      If you have already entered your token in **Preferences → OpenAI API Key**, Buzz uses it automatically and this flag can be omitted.
+
+      <Warning>
+        Passing secrets as command-line arguments may expose them in shell history and process listings. Consider storing the token in Buzz preferences instead.
+      </Warning>
+    </ParamField>
+
+  </Accordion>
+
+  <Accordion title="Display">
+
+    <ParamField query="--hide-gui" type="boolean">
+      Suppress the main Buzz application window. The process still runs and writes output files, but no UI is shown.
+
+      Available since version 1.2.0.
+
+      <Tip>
+        Use `--hide-gui` together with at least one output format flag when running Buzz from scripts or CI/CD pipelines.
+      </Tip>
+    </ParamField>
+
+  </Accordion>
+
+</AccordionGroup>
+
+---
+
+## Examples
+
+<CodeGroup>
+
+```bash Translate MP3 files using OpenAI API
+# Translate two French MP3 files to English using the OpenAI Whisper API
+buzz add \
+  --task translate \
+  --language fr \
+  --model-type openaiapi \
+  /path/to/audio-1.mp3 \
+  /path/to/audio-2.mp3
+```
+
+```bash Transcribe MP4 with Whisper.cpp, export SRT and VTT
+# Transcribe a video with Whisper.cpp small model and write SRT + VTT files
+buzz add \
+  --task transcribe \
+  --model-type whispercpp \
+  --model-size small \
+  --prompt "My initial prompt" \
+  --srt \
+  --vtt \
+  /path/to/video.mp4
+```
+
+```bash Batch transcribe with explicit language
+# Transcribe multiple files, specifying Spanish as the source language
+buzz add \
+  --language es \
+  --txt \
+  lecture-1.mp3 lecture-2.mp3 lecture-3.mp3
+```
+
+```bash Auto-detect language, write to a specific directory
+# Transcribe a file with automatic language detection and save output to /tmp/out
+buzz add \
+  --txt \
+  --output-directory /tmp/out \
+  --hide-gui \
+  recording.wav
+```
+
+</CodeGroup>
+
+## URL input
+
+You can pass a remote URL instead of a local file path. Buzz downloads the file and transcribes it the same way as a local import.
+
+```bash
+buzz add --srt https://example.com/podcast/episode-42.mp3
+```
+
+<Note>
+  URL import is available since version 1.2.0.
+</Note>
+
+---
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="CLI overview" icon="circle-info" href="/cli/overview">
+    When to use the CLI and common invocation patterns.
+  </Card>
+  <Card title="Models" icon="microchip" href="/configuration/models">
+    Download and manage transcription models.
+  </Card>
+</CardGroup>

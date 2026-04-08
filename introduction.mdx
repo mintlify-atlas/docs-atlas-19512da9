@@ -1,0 +1,76 @@
+---
+title: "Introduction"
+description: "Transcribe and translate audio offline on your personal computer, powered by OpenAI's Whisper."
+---
+
+Buzz is a free, open-source desktop application that lets you transcribe and translate audio and video files — entirely offline. No data leaves your computer unless you choose to use the OpenAI API backend.
+
+Powered by [OpenAI's Whisper](https://github.com/openai/whisper), Buzz supports over 90 languages, multiple transcription backends, and exports to TXT, SRT, and VTT formats.
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install Buzz on macOS, Windows, or Linux
+  </Card>
+  <Card title="File Import" icon="file-audio" href="/usage/file-import">
+    Transcribe audio and video files
+  </Card>
+  <Card title="Live Recording" icon="microphone" href="/usage/live-recording">
+    Transcribe speech from your microphone in real time
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli/overview">
+    Automate transcription with the command-line interface
+  </Card>
+</CardGroup>
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Offline transcription" icon="wifi-slash">
+    All transcription runs locally on your machine. No internet connection required once models are downloaded.
+  </Card>
+  <Card title="Multiple backends" icon="layer-group">
+    Choose from Whisper, Whisper.cpp, Faster Whisper, HuggingFace, or the OpenAI API to balance speed and accuracy.
+  </Card>
+  <Card title="GPU acceleration" icon="bolt">
+    Supports CUDA (Nvidia), Apple Silicon (Metal), and Vulkan for faster transcription on compatible hardware.
+  </Card>
+  <Card title="Export formats" icon="file-export">
+    Export transcripts as TXT, SRT, or VTT files for use in video editors, subtitle tools, or any text application.
+  </Card>
+  <Card title="Speaker identification" icon="users">
+    Automatically identify and label different speakers in your audio files.
+  </Card>
+  <Card title="Live presentation mode" icon="display">
+    Show live transcriptions on a dedicated presentation window during events or meetings.
+  </Card>
+</CardGroup>
+
+## Getting started
+
+<Steps>
+  <Step title="Install Buzz">
+    Download and install Buzz for your operating system. See the [Installation guide](/installation) for platform-specific instructions.
+  </Step>
+  <Step title="Download a model">
+    On first launch, open **Preferences → Models** and download a Whisper model. Start with **Whisper.cpp Tiny** for fast performance, or **Faster Whisper Small** for better accuracy.
+  </Step>
+  <Step title="Transcribe a file">
+    Click the **+** button (or **File → Import Media File**), select an audio or video file, choose your settings, and click **Run**.
+  </Step>
+  <Step title="View and export">
+    When transcription completes, double-click the result to open the [Transcription Viewer](/usage/transcription-viewer). Export to TXT, SRT, or VTT as needed.
+  </Step>
+</Steps>
+
+## Supported platforms
+
+| Platform | Architecture | GPU Acceleration |
+|---|---|---|
+| macOS | Intel (x86_64) | CPU only |
+| macOS | Apple Silicon (arm64) | Metal (built-in) |
+| Windows | x86_64 | CUDA 12+ (Nvidia) |
+| Linux | x86_64 | CUDA 12+ (Nvidia), Vulkan |
+
+<Note>
+Buzz is open source under the MIT license. Contributions are welcome on [GitHub](https://github.com/chidiwilliams/buzz).
+</Note>

@@ -1,0 +1,340 @@
+---
+title: "Troubleshooting"
+description: "Diagnose and fix common issues with Buzz — slow transcription, audio problems, model errors, GPU issues, and installation warnings."
+---
+
+If you cannot find a solution here, check the [FAQ](/faq) or [open an issue on GitHub](https://github.com/chidiwilliams/buzz/issues).
+
+## Transcription issues
+
+<AccordionGroup>
+  <Accordion title="Transcription is very slow">
+    Transcription speed depends on your model size, backend, and hardware.
+
+    <Steps>
+      <Step title="Try a smaller model">
+        Open **Help → Preferences → Models** and download a Tiny or Base model. Smaller models are significantly faster with a moderate accuracy trade-off.
+      </Step>
+      <Step title="Switch to the Whisper.cpp backend">
+        Whisper.cpp is a highly optimized C++ implementation that runs efficiently on CPU and most GPUs via Vulkan. It supports real-time transcription on modern laptops, even without a dedicated GPU.
+      </Step>
+      <Step title="Use GPU acceleration">
+        If you have an Nvidia GPU with 6 GB or more of VRAM, switch to the **Faster Whisper** backend. See [GPU not being used](#gpu-not-being-used) if GPU acceleration is not activating.
+      </Step>
+      <Step title="Use the OpenAI API">
+        If local transcription is too slow for your use case, configure an OpenAI API key in **Preferences** and select the **OpenAI API** backend. This offloads processing to OpenAI's servers and requires an internet connection.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Transcription output has many errors">
+    <Steps>
+      <Step title="Set the language explicitly">
+        If you leave the language set to **Detect**, Whisper spends part of its processing time identifying the language. Setting it explicitly to your target language can improve accuracy.
+      </Step>
+      <Step title="Use a larger model">
+        Larger models produce more accurate transcriptions. Try **Small**, **Medium**, or a **Large** variant if you are currently using Tiny or Base.
+      </Step>
+      <Step title="Use an initial prompt for technical terms">
+        In the transcription settings, you can provide an **initial prompt** — a short text that gives Whisper context about the domain. For example, providing a list of proper nouns, technical terms, or speaker names helps Whisper transcribe them correctly.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Whisper hallucinates or invents words not in the audio">
+    Hallucination — where Whisper generates words that were never spoken — is most common with the Large-V3 model, especially on short audio, silence, or noisy input.
+
+    <Steps>
+      <Step title="Switch to Large-V2">
+        The Large-V2 model is generally considered more stable and less prone to hallucination than Large-V3. Try it as your first alternative.
+      </Step>
+      <Step title="Try the Turbo model">
+        The Turbo model is designed to balance speed and accuracy while reducing hallucinations. It is a good middle ground between Large-V2 and Large-V3.
+      </Step>
+      <Step title="Remove silence from the audio">
+        Hallucinations often occur during silence or very low audio levels. Trimming silent sections before transcription can help.
+      </Step>
+    </Steps>
+
+    <Note>
+      Hallucination behavior varies by language and audio type. Testing multiple models on a representative sample is the most reliable way to find what works best for your use case.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Language is not detected correctly">
+    Whisper's automatic language detection works best on audio longer than a few seconds. For short clips or for less common languages, detection can be unreliable.
+
+    <Steps>
+      <Step title="Set the language explicitly">
+        In the transcription settings, change **Language** from **Detect** to your target language. This bypasses automatic detection entirely.
+      </Step>
+      <Step title="Try the HuggingFace backend with MMS models">
+        For languages with limited Whisper support, the HuggingFace backend with Meta's [MMS models](https://ai.meta.com/blog/multilingual-model-speech-recognition/) covers over 1000 languages and may give better results.
+      </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>
+
+## Audio and recording issues
+
+<AccordionGroup>
+  <Accordion title="Microphone not detected">
+    <Steps>
+      <Step title="Check system microphone permissions">
+        <Tabs>
+          <Tab title="macOS">
+            Go to **System Settings → Privacy & Security → Microphone** and ensure Buzz is listed and allowed.
+          </Tab>
+          <Tab title="Windows">
+            Go to **Settings → Privacy → Microphone** and make sure **Allow apps to access your microphone** is enabled and Buzz is permitted.
+          </Tab>
+          <Tab title="Linux">
+            Verify your user is in the `audio` group. Run `groups` in a terminal and check for `audio`. If it's missing, run `sudo usermod -aG audio $USER` and log out and back in.
+          </Tab>
+        </Tabs>
+      </Step>
+      <Step title="Restart Buzz">
+        Close and reopen Buzz. Audio device enumeration happens at startup, so a new device added after Buzz was opened will not appear until you restart.
+      </Step>
+      <Step title="Check that the device is recognized by the OS">
+        Confirm your microphone appears in your system's audio settings and is set as the default input device.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="System audio recording not working">
+    Buzz cannot capture system audio directly — you need to route it through a virtual audio device first.
+
+    <Tabs>
+      <Tab title="macOS">
+        Install [BlackHole](https://github.com/ExistentialAudio/BlackHole). Once installed, set BlackHole as the output device for the application you want to transcribe, then select it as the input in Buzz.
+      </Tab>
+      <Tab title="Windows">
+        Install [VB-CABLE](https://vb-audio.com/Cable/). Set **VB-CABLE Input** as your playback device in Windows Sound settings, then select **VB-CABLE Output** as the source in Buzz.
+      </Tab>
+      <Tab title="Linux">
+        Use PulseAudio to set up a loopback monitor. See the [Ubuntu guide for recording system sound](https://wiki.ubuntu.com/record_system_sound). Then select the monitor source in Buzz's input dropdown.
+      </Tab>
+    </Tabs>
+
+    See the [Live Recording](/usage/live-recording) guide for full instructions.
+  </Accordion>
+
+  <Accordion title="Error: Unanticipated host error [PaErrorCode -9999]">
+    This error means PortAudio cannot open the audio device, almost always because microphone access is blocked.
+
+    <Steps>
+      <Step title="Check microphone permissions on Windows">
+        Go to **Settings → Privacy → Microphone**. Enable **Allow apps to access your microphone** and confirm that Buzz is allowed.
+      </Step>
+      <Step title="Check antivirus or security software">
+        Some antivirus programs block audio device access. Check your security software settings or temporarily disable it to test whether it is the cause. You do not need to uninstall it — look for an audio privacy or device access setting.
+      </Step>
+      <Step title="Check macOS permissions">
+        On macOS, go to **System Settings → Privacy & Security → Microphone** and grant Buzz access.
+      </Step>
+    </Steps>
+
+    <Warning>
+      If you are on Windows and recently granted microphone permission, restart Buzz for the change to take effect.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+## Model issues
+
+<AccordionGroup>
+  <Accordion title="Model download fails or gets stuck">
+    <Steps>
+      <Step title="Check your internet connection">
+        Model files are large (up to several gigabytes). Ensure you have a stable connection before retrying.
+      </Step>
+      <Step title="Retry the download">
+        Go to **Help → Preferences → Models**, delete the partially downloaded model if present, and click **Download** again.
+      </Step>
+      <Step title="Download manually">
+        If downloads fail repeatedly, you can download the model file from the source repository and place it in the [model cache directory](/faq#where-are-the-models-stored) manually.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Buzz crashes after downloading a model">
+    A crash immediately after a model download usually means the file was corrupted during download.
+
+    <Steps>
+      <Step title="Delete the corrupted model">
+        Go to **Help → Preferences → Models** and delete the model that was just downloaded.
+      </Step>
+      <Step title="Re-download the model">
+        Download the model again from **Preferences → Models**. If you are on an unstable connection, wait for a more reliable connection before retrying.
+      </Step>
+      <Step title="Check the logs">
+        If Buzz crashes again, open the log file (**Help → About Buzz → Show logs**) and look for error messages. Attach the log when [reporting the issue](https://github.com/chidiwilliams/buzz/issues).
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Model not found error">
+    This error appears if a model file is missing from the cache directory, for example after moving Buzz to a new machine or deleting files manually.
+
+    <Steps>
+      <Step title="Re-download the model">
+        Open **Help → Preferences → Models** and download the model again.
+      </Step>
+      <Step title="Verify the model cache directory">
+        Check that the model file exists in the correct location. See [Where are the models stored?](/faq#where-are-the-models-stored) for platform-specific paths.
+      </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>
+
+## GPU issues
+
+<AccordionGroup>
+  <Accordion title="GPU is not being used">
+    <Tabs>
+      <Tab title="Windows">
+        CUDA 12 or later is required. Check your CUDA version by running:
+
+        ```bash
+        nvcc --version
+        ```
+
+        If your CUDA version is older than 12, [download the latest CUDA toolkit](https://developer.nvidia.com/cuda-downloads).
+      </Tab>
+      <Tab title="Linux">
+        GPU acceleration should be automatic for Nvidia GPUs. If it is not activating, install the required libraries:
+
+        ```bash
+        # CUDA 12, cuBLAS, and cuDNN are all required
+        # See https://developer.nvidia.com/cuda-downloads for your distro
+        ```
+
+        Also verify that the `BUZZ_FORCE_CPU` environment variable is not set in your environment.
+      </Tab>
+      <Tab title="macOS">
+        Metal acceleration is automatic on Apple Silicon. Intel Macs do not support GPU acceleration and run on CPU only.
+      </Tab>
+    </Tabs>
+
+    <Note>
+      After installing or updating CUDA, restart your machine before opening Buzz.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Out of VRAM — transcription fails or is very slow">
+    Large models require substantial VRAM. If you run out, try these options:
+
+    <Steps>
+      <Step title="Use a smaller model">
+        Switch from a Large model to a Medium or Small model. This significantly reduces VRAM usage.
+      </Step>
+      <Step title="Use a quantized model">
+        Whisper.cpp supports quantized models (for example, `q5` variants). These use less memory with minimal accuracy loss. Download a quantized model from **Preferences → Models**.
+      </Step>
+      <Step title="Set BUZZ_REDUCE_GPU_MEMORY">
+        Set the `BUZZ_REDUCE_GPU_MEMORY=true` environment variable before launching Buzz. This enables memory optimizations at a slight speed cost. See [Environment Variables](/configuration/environment-variables) for how to set this.
+      </Step>
+      <Step title="Use Whisper.cpp instead of Faster Whisper">
+        Whisper.cpp generally uses less VRAM than Faster Whisper for the same model size.
+      </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>
+
+## Installation issues
+
+<AccordionGroup>
+  <Accordion title="Windows shows an unsigned app warning">
+    Buzz is not code-signed on Windows. When you run the installer, Windows SmartScreen may show a warning.
+
+    <Steps>
+      <Step title="Proceed past the warning">
+        Click **More info** on the SmartScreen dialog, then click **Run anyway**.
+      </Step>
+    </Steps>
+
+    <Note>
+      You can verify the authenticity of the download by checking the SHA256 hash of the installer against the value published on the [GitHub releases page](https://github.com/chidiwilliams/buzz/releases).
+    </Note>
+  </Accordion>
+
+  <Accordion title="Flatpak theme is not applied (Linux)">
+    Flatpak sandboxing prevents Buzz from reading system themes by default.
+
+    **For dark mode on GNOME:**
+
+    ```bash
+    gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+    gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+    ```
+
+    Install the extra GNOME themes package. On Fedora:
+
+    ```bash
+    sudo dnf install gnome-themes-extra qadwaitadecorations-qt5 qadwaitadecorations-qt6 qt5-qtwayland qt6-qtwayland
+    ```
+
+    **For custom themes:**
+
+    <Steps>
+      <Step title="Copy themes to your home directory">
+        ```bash
+        cp -r /usr/share/themes/ ~/.themes/
+        ```
+      </Step>
+      <Step title="Grant Flatpak access to the themes folder">
+        ```bash
+        flatpak override --user --filesystem=~/.themes
+        ```
+      </Step>
+      <Step title="Restart Buzz">
+        Close and reopen Buzz.
+      </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>
+
+## Finding log files and reporting issues
+
+<AccordionGroup>
+  <Accordion title="How do I find the Buzz log file?">
+    Since version 1.3.4, you can access logs directly from within Buzz.
+
+    <Steps>
+      <Step title="Open About Buzz">
+        Go to **Help → About Buzz**.
+      </Step>
+      <Step title="Open the logs folder">
+        Click **Show logs**. This opens the folder containing the log file in your file manager.
+      </Step>
+    </Steps>
+
+    <Tip>
+      If your version of Buzz is older than 1.3.4, update to the latest release to get the **Show logs** button. Alternatively, check the platform-specific application log directory for files named `buzz.log` or similar.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="How do I report a bug?">
+    <Steps>
+      <Step title="Reproduce the issue and collect logs">
+        Reproduce the problem, then open **Help → About Buzz → Show logs** to locate the log file.
+      </Step>
+      <Step title="Open a GitHub issue">
+        Go to [github.com/chidiwilliams/buzz/issues](https://github.com/chidiwilliams/buzz/issues) and click **New issue**.
+      </Step>
+      <Step title="Describe the problem clearly">
+        Include your operating system, Buzz version, the steps to reproduce the issue, what you expected to happen, and what actually happened. Attach the log file.
+      </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>
+
+<CardGroup cols={2}>
+  <Card title="FAQ" icon="circle-question" href="/faq">
+    Answers to common questions about models, backends, and offline use
+  </Card>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/chidiwilliams/buzz/issues">
+    Report a bug or request a feature
+  </Card>
+</CardGroup>

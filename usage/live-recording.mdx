@@ -1,0 +1,126 @@
+---
+title: Live recording
+description: Transcribe audio in real time from a microphone or system audio source.
+---
+
+Use live recording to transcribe or translate speech as it happens. Buzz captures audio from a microphone (or a virtual audio device) and writes out text continuously.
+
+## Start a recording session
+
+<Steps>
+  <Step title="Open the live recording screen">
+    Click **Record** in the main toolbar or go to **File → New Live Recording**.
+  </Step>
+  <Step title="Configure your session">
+    Choose a task, language, and microphone. See [Options](#options) below.
+  </Step>
+  <Step title="Click Record">
+    Buzz begins capturing audio and displaying transcriptions in real time.
+  </Step>
+  <Step title="Stop the recording">
+    Click **Stop** when you are done. Buzz saves the session.
+  </Step>
+</Steps>
+
+<Warning>
+  Transcribing with the default Whisper model is CPU-intensive. Use **Whisper.cpp** for better real-time performance — it supports GPU acceleration when the model fits in GPU memory. Smaller models (Tiny, Base, Small) are recommended for low-latency results.
+</Warning>
+
+## Options
+
+| Option | Values | Default | Description |
+|---|---|---|---|
+| **Task** | Transcribe, Translate to English | Transcribe | **Transcribe** outputs text in the spoken language. **Translate to English** outputs English regardless of the source language. |
+| **Language** | See [Whisper's supported languages](https://github.com/openai/whisper#available-models-and-languages) | Detect Language | The language to transcribe. Selecting a known language improves accuracy over automatic detection. |
+| **Microphone** | Available system microphones | System default | The audio input device to record from. |
+
+## Transcription modes
+
+Choose how new text is added to the transcript:
+
+- **Append below** — each new segment is added at the bottom.
+- **Append above** — each new segment is added at the top.
+- **Append and correct** — Buzz uses overlapping audio windows to produce a rolling, self-correcting transcript. Use with the [advanced preferences](#advanced-preferences) to tune latency and accuracy.
+
+## Presentation window
+
+While recording, Buzz can show a large-text **Presentation Window** suitable for displaying live captions at events or presentations. Start a recording session and look for the **Presentation window** button that appears in the toolbar.
+
+## Record system audio
+
+To transcribe audio playing from another application, you need a virtual audio device that routes that application's output into Buzz as a microphone input.
+
+<Tabs>
+  <Tab title="macOS">
+    Use [BlackHole](https://github.com/ExistentialAudio/BlackHole), a free open-source loopback driver.
+
+    <Steps>
+      <Step title="Install BlackHole">
+        ```bash
+        brew install blackhole-2ch
+        ```
+      </Step>
+      <Step title="Create a multi-output device">
+        Open **Audio MIDI Setup** (find it in Spotlight or at `/Applications/Utilities/Audio Midi Setup.app`). Click the **+** icon at the lower left and select **Create Multi-Output Device**.
+      </Step>
+      <Step title="Add your speakers and BlackHole">
+        Check your default speaker and **BlackHole 2ch** in the multi-output device.
+      </Step>
+      <Step title="Select the multi-output device as your speaker">
+        Set the multi-output device as the system output (or per-app output) so audio plays through both your speakers and BlackHole simultaneously.
+      </Step>
+      <Step title="Select BlackHole in Buzz">
+        In the live recording screen, select **BlackHole 2ch** as your microphone and click **Record**.
+      </Step>
+    </Steps>
+
+    Other options include [LoopBeAudio](https://nerds.de/en/loopbeaudio.html), [LoopBack](https://rogueamoeba.com/loopback/), and [Virtual Audio Cable](https://vac.muzychenko.net/en/).
+  </Tab>
+  <Tab title="Windows">
+    Use [VB CABLE](https://vb-audio.com/Cable/), a free virtual audio device.
+
+    <Steps>
+      <Step title="Install VB CABLE">
+        Download and install VB CABLE from the [VB-Audio website](https://vb-audio.com/Cable/).
+      </Step>
+      <Step title="Route application audio to CABLE Input">
+        Right-click the speaker icon in the system tray and select **Open Sound settings**. In **Choose your output device**, select **CABLE Input** to route all system audio, or use **Advanced sound options** to route only specific applications.
+      </Step>
+      <Step title="Select CABLE Output in Buzz">
+        In the live recording screen, select **CABLE Output** as your microphone and click **Record**.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="Linux">
+    Use PulseAudio's built-in monitor sources, as described on the [Ubuntu Wiki](https://wiki.ubuntu.com/record_system_sound).
+
+    <Steps>
+      <Step title="Start the application you want to transcribe">
+        For example, start a video in a media player and begin playback.
+      </Step>
+      <Step title="Open Buzz live recording">
+        Open the live recording screen so the Buzz audio input is visible to PulseAudio.
+      </Step>
+      <Step title="Route audio in pavucontrol">
+        Open **PulseAudio Volume Control** (`pavucontrol`) and go to the **Recording** tab. Find the Buzz entry and change its source to the monitor of the application you want to transcribe.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Advanced preferences
+
+<AccordionGroup>
+  <Accordion title="Silence threshold">
+    Sets a minimum volume level for a segment to be transcribed. Segments where the average volume is below this value are skipped. Available since version 1.4.4.
+  </Accordion>
+  <Accordion title="Line separator">
+    The characters inserted between transcript lines. The default is `\n\n` (an empty line between each entry). Use `\n` for no blank line. Available since version 1.4.4.
+  </Accordion>
+  <Accordion title="Transcription step (Append and correct mode)">
+    Controls how frequently Buzz re-processes overlapping audio. Shorter steps reduce latency but increase CPU load. Monitor the **Queue** indicator while recording — if the queue grows, increase the transcription step to reduce load. Available since version 1.4.4.
+  </Accordion>
+  <Accordion title="Hide unconfirmed (Append and correct mode)">
+    When enabled, Buzz hides the trailing portion of the transcript that has only been seen in one overlapping segment. This increases latency but ensures only confirmed text is displayed. Available since version 1.4.4.
+  </Accordion>
+</AccordionGroup>

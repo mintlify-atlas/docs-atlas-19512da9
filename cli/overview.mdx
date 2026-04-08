@@ -1,0 +1,86 @@
+---
+title: "CLI overview"
+description: "Use the Buzz command-line interface to transcribe and translate audio and video files from your terminal, scripts, or CI/CD pipelines."
+---
+
+Buzz ships with a built-in CLI that exposes the same transcription engine used by the GUI. You can invoke it directly from a terminal, shell script, or any automated pipeline — no window required.
+
+## When to use the CLI
+
+<CardGroup cols={2}>
+  <Card title="Automation" icon="robot">
+    Run transcription as part of a shell script or cron job without opening the desktop app.
+  </Card>
+  <Card title="Batch processing" icon="layer-group">
+    Pass multiple files in a single command to queue them all at once.
+  </Card>
+  <Card title="CI/CD pipelines" icon="circle-nodes">
+    Integrate audio transcription into a build or content pipeline on any machine that has Buzz installed.
+  </Card>
+  <Card title="Headless environments" icon="server">
+    Use `--hide-gui` to run Buzz on a server or in a remote session without displaying a window.
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+Buzz must be installed on your system before you can use the CLI. The `buzz` binary is the same executable used to launch the desktop application.
+
+<Note>
+  Models must be downloaded before you run a transcription. Open **Preferences → Models** in the GUI to download a model, or let the CLI download it automatically on first use.
+</Note>
+
+## Basic usage
+
+```bash
+buzz add [options] [file|url ...]
+```
+
+The `add` command starts one or more transcription tasks. You must supply at least one input file or URL.
+
+## Quick examples
+
+Transcribe a single audio file using the default Whisper Tiny model:
+
+```bash
+buzz add recording.mp3
+```
+
+Transcribe with a specific model and export to SRT:
+
+```bash
+buzz add --model-type whispercpp --model-size small --srt interview.mp4
+```
+
+Translate a French audio file to English and export as TXT:
+
+```bash
+buzz add --task translate --language fr --txt speech.mp3
+```
+
+Run transcription without showing the application window:
+
+```bash
+buzz add --hide-gui --txt lecture.mp4
+```
+
+Pass a remote URL instead of a local file (available since 1.2.0):
+
+```bash
+buzz add --srt https://example.com/audio/podcast.mp3
+```
+
+<Tip>
+  Combine `--hide-gui` with one or more output format flags (`--srt`, `--vtt`, `--txt`) to run fully silent, headless transcription jobs.
+</Tip>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Command reference" icon="terminal" href="/cli/commands">
+    Full reference for every flag accepted by the `add` command.
+  </Card>
+  <Card title="Models" icon="microchip" href="/configuration/models">
+    Learn how to download and manage transcription models.
+  </Card>
+</CardGroup>

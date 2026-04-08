@@ -1,0 +1,56 @@
+---
+title: File import
+description: Transcribe audio and video files by importing them into Buzz.
+---
+
+Use file import to transcribe or translate a local audio or video file. Buzz processes the file offline using the Whisper model you select.
+
+## Import a file
+
+<Steps>
+  <Step title="Open the import dialog">
+    Go to **File → Import Media File**, click the **+** icon in the toolbar, or press **Ctrl+O** (Windows/Linux) / **Cmd+O** (macOS).
+  </Step>
+  <Step title="Choose a file">
+    Select an audio or video file from your filesystem. See [Supported formats](#supported-formats) for the full list.
+  </Step>
+  <Step title="Configure transcription settings">
+    Choose a task, language, and model. Expand **Advanced...** to set additional options such as word-level timings, speech extraction, or an initial prompt.
+
+    <Tip>
+      Always select a specific language when you know it. Automatic language detection reads only the first few seconds of audio and may produce unexpected results for short clips or multilingual content.
+    </Tip>
+  </Step>
+  <Step title="Run the transcription">
+    Click **Run**. Buzz queues the file and begins transcribing.
+  </Step>
+  <Step title="Open the transcription">
+    When the status column shows **Completed**, double-click the row (or select it and click the **⤢** icon) to open the [transcription viewer](/usage/transcription-viewer).
+  </Step>
+</Steps>
+
+## Available options
+
+| Option | Values | Default | Description |
+|---|---|---|---|
+| **Export As** | TXT, SRT, VTT | TXT | Output file format written alongside your source file when the job completes. |
+| **Word-Level Timings** | Off / On | Off | Generates a separate subtitle line for each word. Use the [resize tool](/usage/transcription-viewer#edit-and-resize) afterwards to combine words into readable subtitle segments. |
+| **Extract Speech** | Off / On | Off | Strips non-speech audio to a separate track before transcription, which can improve accuracy in noisy recordings. |
+
+### Initial prompt
+
+You can supply an **Initial prompt** (under **Advanced...**) to guide the model's vocabulary. This is useful for correcting recurring misspellings, proper nouns, or domain-specific terms.
+
+```text
+Bernstein, Sondheim, Kander and Ebb, Broadway
+```
+
+See the [OpenAI Whisper prompting guide](https://cookbook.openai.com/examples/whisper_prompting_guide#pass-names-in-the-prompt-to-prevent-misspellings) for more examples.
+
+## Supported formats
+
+Buzz accepts the following file types:
+
+**Audio:** `.mp3`, `.wav`, `.m4a`, `.ogg`, `.opus`, `.flac`
+
+**Video:** `.mp4`, `.webm`, `.ogm`, `.mov`, `.mkv`, `.avi`, `.wmv`

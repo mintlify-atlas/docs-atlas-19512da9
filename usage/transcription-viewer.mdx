@@ -1,0 +1,142 @@
+---
+title: Transcription viewer
+description: Review, edit, search, and export your transcriptions with the built-in viewer.
+---
+
+The transcription viewer opens when you double-click a completed transcription in the main list (or select it and click the **⤢** icon). It lets you review segments, edit timestamps, search text, control playback, and export results.
+
+## Interface overview
+
+The viewer is divided into these areas:
+
+- **Top toolbar** — view mode, export, translate, resize, speaker identification, find
+- **Search bar** — appears below the toolbar when activated
+- **Playback controls** — loop, follow audio, speed settings (shown when audio is playing or toggled manually)
+- **Segment table** — timestamped list of transcription segments (Timestamps view)
+- **Text display** — combined plain text (Text and Translation views)
+- **Media player** — audio or video player with progress bar
+
+## Top toolbar
+
+### View mode
+
+Switch between three views using the **View Mode** button:
+
+| Mode | Description |
+|---|---|
+| **Timestamps** | Table of segments with start and end times. Supports inline timestamp editing. |
+| **Text** | Full transcript as flowing plain text, with paragraph breaks inserted after silences longer than 2 seconds. |
+| **Translation** | The AI-translated text, if a translation has been generated. |
+
+### Export
+
+Click **Export** to open the export menu and save the transcription in your preferred format: **SRT**, **VTT**, **TXT**, or **JSON**.
+
+### Translate
+
+Click **Translate** to open translation settings and run an AI translation. See [Translations](/usage/translations) for setup details.
+
+### Resize
+
+Click **Resize** to open the resize dialog, which lets you recombine segments with different maximum lengths, split on punctuation, and extend segment end times. See [Edit and resize](#edit-and-resize) for details.
+
+### Identify speakers
+
+Click **Identify Speakers** to run speaker diarization on the audio file. See [Speaker identification](/usage/speaker-identification) for details.
+
+<Note>
+  The **Identify Speakers** button is not available on Intel-based Macs.
+</Note>
+
+### Find
+
+Click **Find** (or press **Ctrl+F** / **Cmd+F**) to show or hide the search bar.
+
+### Scroll to current
+
+Click **Scroll to Current** (or press **Ctrl+G** / **Cmd+G**) to jump the segment list to the position matching the current audio playback position.
+
+## Search
+
+Activate the search bar with **Find** or **Ctrl+F** / **Cmd+F**. Type in the search input to find text across the transcript.
+
+| Feature | Behaviour |
+|---|---|
+| **Real-time** | Results update as you type (with a short debounce delay). |
+| **Case-insensitive** | Matches regardless of letter case. |
+| **Cross-view** | Works in Timestamps, Text, and Translation modes. |
+| **Result counter** | Shows current position and total matches, e.g. "3 of 15 matches". |
+
+### Search keyboard shortcuts
+
+| Key | Action |
+|---|---|
+| **Ctrl+F** / **Cmd+F** | Toggle search bar |
+| **Enter** | Find next match |
+| **Shift+Enter** | Find previous match |
+| **Escape** | Close search bar |
+
+## Playback controls
+
+The playback controls panel appears automatically when audio starts playing. You can also toggle it manually with **Ctrl+Alt+P** / **Cmd+Alt+P**.
+
+### Loop segment
+
+Check **Loop Segment** to make Buzz loop the audio range of the segment you click. The loop range is highlighted in the media player timeline.
+
+### Follow audio
+
+Check **Follow Audio** to make the segment list scroll automatically as the audio progresses, keeping the currently playing segment in view.
+
+### Speed controls
+
+Adjust playback speed using the **Speed** dropdown (preset values: 0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x) or the **−** and **+** buttons, which change speed in 0.05x increments. Your speed setting is saved between sessions.
+
+## Edit and resize
+
+In **Timestamps** view you can adjust segment boundaries directly.
+
+**Inline timestamp editing** — click a start or end time cell and type a new value.
+
+**Keyboard timestamp adjustment** — select a segment, then use the shortcuts below to nudge timestamps by 0.5 seconds at a time.
+
+**Resize dialog** — click **Resize** in the toolbar to recombine segments in bulk:
+
+- Transcripts generated **with word-level timings** can be recombined with a maximum subtitle length and optional punctuation-based splitting. If the source audio file is present, Buzz also analyses silences to improve accuracy.
+- Transcripts generated **without word-level timings** can be recombined by specifying a maximum subtitle length only.
+- Use **Extend end time** to add extra seconds to each segment's end, so subtitles stay on screen longer. Buzz ensures that extended end times do not overlap the next segment's start.
+
+## Keyboard shortcuts
+
+### Audio playback
+
+| Shortcut | Action |
+|---|---|
+| **Ctrl+P** / **Cmd+P** | Play / Pause |
+| **Ctrl+Shift+P** / **Cmd+Shift+P** | Replay current segment from its start |
+
+### Timestamp adjustment
+
+| Shortcut | Action |
+|---|---|
+| **Ctrl+←** / **Cmd+←** | Decrease segment start time by 0.5 s |
+| **Ctrl+→** / **Cmd+→** | Increase segment start time by 0.5 s |
+| **Ctrl+Shift+←** / **Cmd+Shift+←** | Decrease segment end time by 0.5 s |
+| **Ctrl+Shift+→** / **Cmd+Shift+→** | Increase segment end time by 0.5 s |
+
+### Navigation
+
+| Shortcut | Action |
+|---|---|
+| **Ctrl+F** / **Cmd+F** | Toggle search bar |
+| **Ctrl+Alt+P** / **Cmd+Alt+P** | Toggle playback controls |
+| **Ctrl+G** / **Cmd+G** | Scroll to current audio position |
+| **Ctrl+O** / **Cmd+O** | Open file import dialog |
+
+### Search (when search bar is focused)
+
+| Shortcut | Action |
+|---|---|
+| **Enter** | Find next match |
+| **Shift+Enter** | Find previous match |
+| **Escape** | Close search bar |

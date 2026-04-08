@@ -1,0 +1,44 @@
+---
+title: Speaker identification
+description: Label and rename individual speakers in a completed transcription.
+---
+
+Speaker identification analyses a completed transcription and marks each segment with the speaker who said it. You can then preview, rename, and merge speaker entries before saving.
+
+<Warning>
+  Speaker identification is not available on Intel-based Macs. The underlying diarization library does not support that platform.
+</Warning>
+
+## Identify speakers
+
+<Steps>
+  <Step title="Open the transcription">
+    In the main window, double-click a completed transcription (or select it and click the **⤢** icon) to open the [transcription viewer](/usage/transcription-viewer).
+  </Step>
+  <Step title="Click Identify Speakers">
+    Click the **Identify Speakers** button in the toolbar. Buzz analyses the source audio file and assigns speaker labels (e.g. **Speaker 1**, **Speaker 2**) to each segment.
+
+    <Note>
+      The source audio file must still be present on your system for speaker identification to work.
+    </Note>
+  </Step>
+  <Step title="Review the results">
+    Each segment in the transcript now shows a speaker label. Segments from the same speaker are grouped together.
+  </Step>
+</Steps>
+
+## Preview a speaker
+
+To verify that a label matches the right person, click the **preview** button next to a speaker label. Buzz plays a 10-second sample from a random sentence attributed to that speaker.
+
+## Rename speaker labels
+
+Click a speaker label and type a new name to replace the automatically generated identifier (e.g. change **Speaker 1** to **Alice**). Renaming a label updates it across all segments attributed to that speaker.
+
+## Merge consecutive sentences
+
+Check **Merge speaker sentences** before saving. When enabled, Buzz combines consecutive segments from the same speaker into a single segment, reducing the total number of rows in the transcript and making it easier to read.
+
+## Save
+
+Click **Save** to apply your speaker labels (and any merges) to the transcription. The segment table updates immediately.

@@ -1,0 +1,206 @@
+---
+title: Installation
+description: Install Buzz on macOS, Windows, Linux, or via PyPI.
+---
+
+Buzz is available for **macOS** (Intel and Apple Silicon), **Windows**, and **Linux**. You can also install it from PyPI if you prefer a Python-managed environment.
+
+<Tabs>
+  <Tab title="macOS">
+    <Steps>
+      <Step title="Download the installer">
+        Go to the [Buzz page on SourceForge](https://sourceforge.net/projects/buzz-captions/files/) and download the latest `.dmg` file.
+      </Step>
+      <Step title="Open the DMG and install">
+        Double-click the downloaded `.dmg`, then drag **Buzz** into your **Applications** folder.
+      </Step>
+      <Step title="Launch Buzz">
+        Open **Buzz** from your **Applications** folder or Launchpad.
+      </Step>
+    </Steps>
+
+    <Note>
+      Both Intel (x86\_64) and Apple Silicon (arm64) Macs are supported. Apple Silicon Macs use Metal for GPU-accelerated transcription automatically.
+    </Note>
+  </Tab>
+
+  <Tab title="Windows">
+    <Steps>
+      <Step title="Download the installer">
+        Go to the [Buzz page on SourceForge](https://sourceforge.net/projects/buzz-captions/files/) and download the latest Windows installer.
+      </Step>
+      <Step title="Run the installer">
+        Double-click the installer to run it.
+      </Step>
+      <Step title="Bypass the security warning">
+        Because the app is not code-signed, Windows will show a security warning. Click **More info**, then click **Run anyway** to proceed.
+      </Step>
+    </Steps>
+
+    <Warning>
+      The Windows security warning is expected. Buzz is open-source software — you can review the source on [GitHub](https://github.com/chidiwilliams/buzz).
+    </Warning>
+  </Tab>
+
+  <Tab title="Linux">
+    Buzz is available as a **Flatpak** or a **Snap**. Choose whichever package format your distribution supports.
+
+    <Tabs>
+      <Tab title="Flatpak">
+        <Steps>
+          <Step title="Install Buzz from Flathub">
+            ```shell
+            flatpak install flathub io.github.chidiwilliams.Buzz
+            ```
+          </Step>
+          <Step title="Launch Buzz">
+            ```shell
+            flatpak run io.github.chidiwilliams.Buzz
+            ```
+          </Step>
+        </Steps>
+      </Tab>
+
+      <Tab title="Snap">
+        <Steps>
+          <Step title="Install system dependencies">
+            ```shell
+            sudo apt-get install libportaudio2 libcanberra-gtk-module libcanberra-gtk3-module
+            ```
+          </Step>
+          <Step title="Install Buzz from the Snap Store">
+            ```shell
+            sudo snap install buzz
+            ```
+          </Step>
+          <Step title="Connect the password manager service">
+            This allows Buzz to store your API keys securely.
+
+            ```shell
+            sudo snap connect buzz:password-manager-service
+            ```
+          </Step>
+        </Steps>
+
+        <Tip>
+          To get the latest development version with recent bug fixes and features, install from the edge channel instead:
+
+          ```shell
+          sudo snap install buzz --channel latest/edge
+          ```
+        </Tip>
+      </Tab>
+    </Tabs>
+  </Tab>
+
+  <Tab title="PyPI">
+    Installing from PyPI gives you the most control over your environment, including GPU support configuration.
+
+    <Steps>
+      <Step title="Set up Python 3.12">
+        Buzz requires **Python 3.12** exactly. Verify your version:
+
+        ```shell
+        python --version
+        ```
+
+        <Warning>
+          Python versions outside the `>=3.12,<3.13` range are not supported. Use [pyenv](https://github.com/pyenv/pyenv) or another version manager if needed.
+        </Warning>
+      </Step>
+
+      <Step title="Install ffmpeg">
+        Buzz requires [ffmpeg](https://www.ffmpeg.org/download.html) for audio processing. Install it using your system package manager:
+
+        <CodeGroup>
+          ```shell macOS (Homebrew)
+          brew install ffmpeg
+          ```
+
+          ```shell Ubuntu / Debian
+          sudo apt-get install ffmpeg
+          ```
+
+          ```shell Windows (winget)
+          winget install ffmpeg
+          ```
+        </CodeGroup>
+      </Step>
+
+      <Step title="Install Buzz">
+        ```shell
+        pip install buzz-captions
+        ```
+      </Step>
+
+      <Step title="Run Buzz">
+        ```shell
+        python -m buzz
+        ```
+      </Step>
+    </Steps>
+
+    ## Linux system dependencies
+
+    On Linux, you may be missing several system libraries. Install them with:
+
+    ```shell
+    sudo apt-get install --no-install-recommends \
+      libyaml-dev libtbb-dev libxkbcommon-x11-0 \
+      libxcb-icccm4 libxcb-image0 libxcb-keysyms1 \
+      libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 \
+      libxcb-shape0 libxcb-cursor0 libportaudio2 \
+      gettext libpulse0 ffmpeg
+    ```
+
+    On Ubuntu versions **prior to 24.04**, also install:
+
+    ```shell
+    sudo apt-get install --no-install-recommends libegl1-mesa
+    ```
+
+    ## GPU support
+
+    ### Nvidia (CUDA) on Windows and Linux
+
+    To enable CUDA acceleration on Nvidia GPUs, install the CUDA-enabled versions of PyTorch after installing Buzz:
+
+    ```shell
+    pip3 install -U \
+      torch==2.8.0+cu129 \
+      torchaudio==2.8.0+cu129 \
+      --index-url https://download.pytorch.org/whl/cu129
+    ```
+
+    Then install the required Nvidia CUDA libraries:
+
+    ```shell
+    pip3 install \
+      nvidia-cublas-cu12==12.9.1.4 \
+      nvidia-cuda-cupti-cu12==12.9.79 \
+      nvidia-cuda-runtime-cu12==12.9.79 \
+      --extra-index-url https://pypi.ngc.nvidia.com
+    ```
+
+    <Note>
+      GPU acceleration for Apple Silicon (Metal) is enabled automatically on macOS arm64 — no additional packages are needed.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Import a file" icon="file-audio" href="/usage/file-import">
+    Transcribe an audio or video file
+  </Card>
+  <Card title="Live recording" icon="microphone" href="/usage/live-recording">
+    Transcribe speech from your microphone in real time
+  </Card>
+  <Card title="Download models" icon="download" href="/configuration/models">
+    Choose and download a Whisper model
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/troubleshooting">
+    Solve common installation issues
+  </Card>
+</CardGroup>
